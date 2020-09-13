@@ -29,13 +29,27 @@ Dado que la versatilidad y tolerancia a fallos es algo necesesario, es convenien
 
 - __Socket master__, es donde pegan los devices, para fines de este ejercicio, asumiremos que el nombre de dominio apunta a este servicio o que los devices envían directamente a la IP/port. Dado que existe el requerimiento de una comunicación bidireccional, se tiene una cola de entrada y una cola de salida. Con la cola de entrada no hay problema, se tiene una nuevo cliente(device) que genera una conexión con el socket, se añade un thread para manejar esta conexión, y todo lo que llegue desde esta conexión se envía a la cola de entrada. El problema es cuando se tienen comandos que van hacia el dispositivo. dado que generar una cola para cada dispositivo es contraproducente, se debe idear un mecanismo para poder enviar la información que corresponde al dispositivo, identificandolo por la imei; algo que se puede hacer es ponerle un parámetro al objeto cliente que sea la imei, y que la clase que genera los threads tenga un diccionario con el identificador de estos clientes y la IMEI, de tal manera que al consumir la cola, se sepa a que objeto entregarle el comando. MMMM no es una tarea trivial y pienso que es un buen ejercicio para mañana, principalmente por esta dificultad. Los otros subsistemas son bien straigthfordward.
 
-Cabe recalcar que esto si se podría inmplementar en un una herramienta como Kafka.
+La prioridad, dependiendo de la dificultad, sería 3 parser, es algo sencillo, 2 sender, y 3 socket, que es el core de la comunicación.
+
+Cabe recalcar que esto si se podría inmplementar en una herramienta como Kafka.
 
 # Testing 
 Ahora bien, este sistema hay que estresarlo y poder sacar resultados de por ejemplo, tiempo de permanencia de los mensajes. para este fin se debería implementar algo como lo que indica el siguiente diagrama:
 
+![asd](https://user-images.githubusercontent.com/5314353/93009296-a9527480-f555-11ea-81b4-7e4c2ae86d29.png)
 
+Donde los tester serían entidades para insertar recibir datos del sistema, y los verifiers sacarían conclusiones desde lo que se guarda en DB.
 
-# 
+# Para mañana
 
+Mi propuesta es implementer un sender, que reciba la trama:
+```
+IMEI|SPEED|LAT|LONG|DATETIME
+```
+y la coloque en las colas (por tiempo y recursos solo imprimira por pantalla y guardara en la BD).
 
+También implementar un tester que alimente este sender y otro tester que alimente una BD mongo que contenga los comandos de salida:
+
+![SOME](https://user-images.githubusercontent.com/5314353/93009385-c8053b00-f556-11ea-9245-225f139e9dad.png)
+
+todo esto en python usango mongo atlas.
