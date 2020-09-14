@@ -10,7 +10,6 @@ class EchoServerProtocol(asyncio.Protocol):
     def data_received(self, data):
         message = data.decode()
         print('Data received: {!r}'.format(message))
-
         print('Send: {!r}'.format(message))
         self.transport.write(data)
 
