@@ -1,5 +1,6 @@
 import asyncio
-
+import binascii
+from time import sleep
 example_msg = '000000000000008c08010000013feb55ff74000f0ea850209a690000940000120000001e09010002000300040016014703f0001504c8000c0900730a00460b00501300464306d7440000b5000bb60007422e9f180000cd0386ce000107c700000000f10000601a46000001344800000bb84900000bb84a00000bb84c00000000024e0000000000000000cf00000000000000000100003fca'
 
 class EchoClientProtocol(asyncio.Protocol):
@@ -10,8 +11,12 @@ class EchoClientProtocol(asyncio.Protocol):
     def connection_made(self, transport):
         print(type(self.message))
         transport.write(self.message)# no need to encode if the msg comes inbytes
-        print('Data sent: {!r}'.format(self.message))
-
+        print('good data sent: {!r}'.format(binascii.hexlify(self.message)))
+        #random change to test rejection
+        self.message[18]=9
+        transport.write(self.message)# no need to encode if the msg comes inbytes
+        print('bad data sent: {!r}'.format(binascii.hexlify(self.message)))
+        
     def data_received(self, data):
         print('Data received: {!r}'.format(data.decode()))
 
