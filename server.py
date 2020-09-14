@@ -3,8 +3,8 @@ import asyncio
 
 class EchoServerProtocol(asyncio.Protocol):
     def connection_made(self, transport):
-        peername = transport.get_extra_info('peername')
-        print('Connection from {}'.format(peername))
+        self._peer = transport.get_extra_info('peername')
+        print('Connection from {}'.format(self._peer))
         self.transport = transport
 
     def data_received(self, data):
@@ -14,9 +14,9 @@ class EchoServerProtocol(asyncio.Protocol):
         print('Send: {!r}'.format(message))
         self.transport.write(data)
 
-        print('Close the client socket')
-        self.transport.close()
-
+    def connection_lost(self, transport):
+        print('Lost connection with {}'.format(self._peer))
+        
 
 async def main():
     # Get a reference to the event loop as we plan to use
